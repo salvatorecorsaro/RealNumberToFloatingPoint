@@ -10,29 +10,19 @@ typedef struct variables {
     float decimal_part;
     double stored_nmb;
     int integer_part;
-    int temp_integer_part;
-    int buffer[30];
-    int index;
-    int count;
     int final[32];
     int count_integer;
-    int count_decimal;
-    int nmb_sign;
-    int printMantissaInteger;
 } variables;
 
+
 void ask_for_number(variables *var_list) {
-    double temp_double = 45.45;
+    double temp_double = 1245.4567;
+    int number_sign = temp_double > 0 ? 0 : 1;
+    temp_double = temp_double > 0 ? temp_double : temp_double * -1;
     //printf("Enter any number:");
     //scanf("%lf", &temp_double);
     var_list->stored_nmb = temp_double;
-    if (temp_double > 0) {
-        printf("Sign: 0");
-        var_list->final[0] = 0;
-    } else {
-        printf("Sign: 1");
-        var_list->final[0] = 1;
-    }
+    var_list->final[0] = number_sign;
 }
 
 void store_integer_part(variables *var_list) {
@@ -43,30 +33,17 @@ void store_decimal_part(variables *var_list) {
     var_list->decimal_part = var_list->stored_nmb - var_list->integer_part;
 }
 
-void convert_integer_to_binary(variables *var_list) {
-    int i = 0;
-    int binary_value = 0;
-    var_list->count_integer = 0;
-    while (var_list->integer_part != 0) {
 
-        binary_value = var_list->integer_part % 2;
-        var_list->integer_part /= 2;
-        var_list->final[9 + i] = binary_value;
-        var_list->count_integer++;
-        i++;
-    }
-    var_list->index = i;
-}
+
 
 void convert_integer_to_binary_for_mantissa(variables *var_list) {
-    if (var_list->printMantissaInteger == 0)
-        printf(" Mantissa integer part: ");
     int first_one = 1;
-    int i = 0;
-    int l = 0;
-    int binary_value = 0;
+    int i, j = 0;
+    int binary_value;
     int temp_integer_part = var_list->integer_part;
     var_list->count_integer = 0;
+
+
     while (temp_integer_part != 0) {
 
         binary_value = temp_integer_part % 2;
@@ -75,32 +52,27 @@ void convert_integer_to_binary_for_mantissa(variables *var_list) {
             if (first_one == 1)
                 first_one = 0;
             else {
-                var_list->final[9 + l] = binary_value;
+                var_list->final[9 + j] = binary_value;
                 var_list->count_integer++;
-                l++;
-                if (var_list->printMantissaInteger == 0)
-                    printf("%d", binary_value);
+
+                j++;
             }
         } else {
             if (first_one == 0) {
-                var_list->final[9 + l] = binary_value;
+                var_list->final[9 + j] = binary_value;
                 var_list->count_integer++;
-                l++;
-                if (var_list->printMantissaInteger == 0)
-                    printf("%d", binary_value);
+                j++;
+
             }
         }
 
         i++;
     }
-    var_list->index = l;
 }
 
 void store_exponent(variables *var_list) {
-    printf(" Exponent: ");
-
+    printf("%d\n", var_list->count_integer);
     int exponent = 127 + var_list->count_integer;
-    int i = 0;
     int binary_value;
 
     int first_one = 1;
@@ -115,13 +87,10 @@ void store_exponent(variables *var_list) {
                 first_one = 0;
                 var_list->final[1 + l] = binary_value;
                 l++;
-                printf("%d", binary_value);
                 bit_to_fill--;
             } else {
                 var_list->final[1 + l] = binary_value;
-
                 l++;
-                printf("%d", binary_value);
                 bit_to_fill--;
             }
         } else {
@@ -129,7 +98,6 @@ void store_exponent(variables *var_list) {
                 var_list->final[1 + l] = binary_value;
 
                 l++;
-                printf("%d", binary_value);
                 bit_to_fill--;
             }
         }
@@ -138,18 +106,16 @@ void store_exponent(variables *var_list) {
     while (bit_to_fill > 0) {
         var_list->final[1 + l] = 0;
         bit_to_fill--;
-        printf("%d", 0);
+        l++;
     }
-    var_list->printMantissaInteger = 0;
 }
 
 void convert_decimal_to_binary(variables *var_list) {
     int j;
-    int precision = 24 - var_list->count_integer;
+    int precision = 23 - var_list->count_integer;
     int i = 9 + var_list->count_integer;
     int temp;
 
-    printf(" Mantissa decimal part: ");
     for (j = 1; j <= precision; j++) {
         var_list->decimal_part = var_list->decimal_part * 2;
 
@@ -158,20 +124,39 @@ void convert_decimal_to_binary(variables *var_list) {
         i++;
         if (temp == 1)
             var_list->decimal_part = var_list->decimal_part - temp;
-        printf("%d", temp);
     }
-    printf("\n");
+}
+
+variables *generate_variables_list() {
+    variables *var_list = (variables *) malloc(1 * (sizeof(variables)));
+    return var_list;
+}
+
+void extract_data_from_number(const variables *var_list) {
+    store_integer_part(var_list);
+    store_decimal_part(var_list);
+}
+
+void print_floating_point_number(variables *var_list) {
+    int size = 32;
+    int i = -1;
+    while (++i < size) {
+        putchar(var_list->final[i] + 48);
+    }
 }
 
 void main() {
 
-    variables *var_list = (variables *) malloc(1 * (sizeof(variables)));
-    var_list->printMantissaInteger = 1;
+    variables *var_list = generate_variables_list();
     ask_for_number(var_list);
-    store_integer_part(var_list);
-    store_decimal_part(var_list);
+    extract_data_from_number(var_list);
     convert_integer_to_binary_for_mantissa(var_list);
     store_exponent(var_list);
-    convert_integer_to_binary_for_mantissa(var_list);
     convert_decimal_to_binary(var_list);
+    print_floating_point_number(var_list);
+    free(var_list);
 }
+
+/* need to check the binary converter it seems there is an error in the binary result.
+ * need to invert the result number;
+ */
