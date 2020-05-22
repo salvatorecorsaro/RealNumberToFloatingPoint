@@ -37,22 +37,23 @@ void insert_sign(variables *var_list, int number_sign) { var_list->final[0] = nu
 
 void ask_for_number(variables *var_list) {
     double temp_double;
-    temp_double = temp_double > 0 ? temp_double : temp_double * -1;
+
     printf("CONVERTER * Real number to floating point (IEEE 754 standard)\n");
     printf("Enter the number you want to convert:");
     scanf("%lf", &temp_double);
     int number_sign = temp_double > 0 ? 0 : 1;
+
     temp_double = temp_double > 0 ? temp_double : temp_double * -1;
     var_list->stored_nmb = temp_double;
     insert_sign(var_list, number_sign);
 }
 
 void store_integer_part(variables *var_list) {
-    var_list->integer_part = var_list->stored_nmb;
+    var_list->integer_part = (int) var_list->stored_nmb;
 }
 
 void store_decimal_part(variables *var_list) {
-    var_list->decimal_part = var_list->stored_nmb - var_list->integer_part;
+    var_list->decimal_part = (float) (var_list->stored_nmb - var_list->integer_part);
 }
 
 void insert_mantissa(variables *var_list, int j, int count, int *temp_mantissa) {
@@ -147,7 +148,7 @@ void prepare_to_convert_decimal_part(variables *var_list) {
 void convert_decimal_mantissa_to_binary(variables *var_list) {
     while (++var_list->j <= var_list->precision) {
         var_list->decimal_part = var_list->decimal_part * 2;
-        var_list->binary_value = var_list->decimal_part;
+        var_list->binary_value = (int) var_list->decimal_part;
         var_list->final[var_list->i] = var_list->binary_value;
         var_list->i++;
         if (var_list->binary_value == 1)
@@ -165,7 +166,7 @@ variables *generate_variables_list() {
     return var_list;
 }
 
-void extract_data_from_number(const variables *var_list) {
+void extract_data_from_number(variables *var_list) {
     store_integer_part(var_list);
     store_decimal_part(var_list);
 }
