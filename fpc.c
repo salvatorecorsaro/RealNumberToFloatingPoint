@@ -16,7 +16,7 @@ typedef struct variables {
 
 
 void ask_for_number(variables *var_list) {
-    double temp_double = 1245.4567;
+    double temp_double = -532.49;
     int number_sign = temp_double > 0 ? 0 : 1;
     temp_double = temp_double > 0 ? temp_double : temp_double * -1;
     //printf("Enter any number:");
@@ -43,70 +43,85 @@ void convert_integer_to_binary_for_mantissa(variables *var_list) {
     int temp_integer_part = var_list->integer_part;
     var_list->count_integer = 0;
 
+    int count = 0;
+    int test_integer = temp_integer_part;
+    int test_binary_value;
+    int arr_mant[128];
+    while (test_integer != 0) {
 
-    while (temp_integer_part != 0) {
-
-        binary_value = temp_integer_part % 2;
-        temp_integer_part /= 2;
-        if (binary_value == 1) {
-            if (first_one == 1)
+        test_binary_value = test_integer % 2;
+        test_integer /= 2;
+        arr_mant[count] = test_binary_value;
+        count++;
+    }
+    count--;
+    while (count >= 0) {
+        if (arr_mant[count] == 1) {
+            if (first_one == 1) {
                 first_one = 0;
-            else {
-                var_list->final[9 + j] = binary_value;
+                count--;
+            } else {
+                var_list->final[9 + j] = arr_mant[count];
                 var_list->count_integer++;
-
                 j++;
+                count--;
             }
         } else {
             if (first_one == 0) {
-                var_list->final[9 + j] = binary_value;
+                var_list->final[9 + j] = arr_mant[count];
                 var_list->count_integer++;
                 j++;
+                count--;
 
             }
         }
-
-        i++;
     }
+
 }
 
 void store_exponent(variables *var_list) {
     printf("%d\n", var_list->count_integer);
     int exponent = 127 + var_list->count_integer;
     int binary_value;
+    printf("%d\n", exponent);
 
-    int first_one = 1;
-    int l = 0;
+    int j = 0;
     int bit_to_fill = 8;
-    while (exponent != 0) {
+    int count = 0;
+    int test_integer = exponent;
+    int test_binary_value;
+    int arr_mant[20];
+    while (test_integer != 0) {
 
-        binary_value = exponent % 2;
-        exponent /= 2;
-        if (binary_value == 1) {
-            if (first_one == 1) {
-                first_one = 0;
-                var_list->final[1 + l] = binary_value;
-                l++;
-                bit_to_fill--;
-            } else {
-                var_list->final[1 + l] = binary_value;
-                l++;
-                bit_to_fill--;
-            }
+        test_binary_value = test_integer % 2;
+        test_integer /= 2;
+        arr_mant[count] = test_binary_value;
+        count++;
+    }
+    count--;
+    while (count >= 0) {
+        if (arr_mant[count] == 1) {
+
+            var_list->final[1 + j] = arr_mant[count];
+            j++;
+            count--;
+            bit_to_fill--;
+
         } else {
-            if (first_one == 0) {
-                var_list->final[1 + l] = binary_value;
 
-                l++;
-                bit_to_fill--;
-            }
+            var_list->final[1 + j] = arr_mant[count];
+            j++;
+            count--;
+            bit_to_fill--;
+
         }
     }
 
+
     while (bit_to_fill > 0) {
-        var_list->final[1 + l] = 0;
+        var_list->final[1 + j] = 0;
         bit_to_fill--;
-        l++;
+        j++;
     }
 }
 
@@ -156,7 +171,3 @@ void main() {
     print_floating_point_number(var_list);
     free(var_list);
 }
-
-/* need to check the binary converter it seems there is an error in the binary result.
- * need to invert the result number;
- */
