@@ -1,3 +1,10 @@
+/*
+ * author: Salvatore Corsaro
+ * date: 22 may 2020
+ * location: Madrid - Spain
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -124,7 +131,7 @@ void insert_exponent(variables *var_list) {
     }
 }
 
-void store_exponent(variables *var_list) {
+void processing_exponent(variables *var_list) {
     prepare_to_calculate_exponent(var_list);
     convert_exponent_to_binary(var_list);
     insert_exponent(var_list);
@@ -176,7 +183,7 @@ void print_floating_point_number(variables *var_list) {
 void convert_real_number_to_floating_point(const variables *var_list) {
     extract_data_from_number(var_list);
     processing_integer_part_of_mantissa(var_list);
-    store_exponent(var_list);
+    processing_exponent(var_list);
     process_decimal_part_of_mantissa(var_list);
 }
 
