@@ -1,1 +1,0 @@
-/usr/bin/cc -g   CMakeFiles/fpc.dir/fpc.c.o  -o fpc 
